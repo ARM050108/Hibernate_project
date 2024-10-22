@@ -11,7 +11,6 @@ public class UserDaoJDBCImpl implements UserDao {
     private Connection connection;
 
     public UserDaoJDBCImpl() {
-        // Создание единственного соединения, которое будет использоваться во всех методах
         try {
             connection = Util.getConnection();
         } catch (SQLException e) {
