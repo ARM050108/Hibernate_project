@@ -15,6 +15,7 @@ public class Util {
     private static final String USERNAME = "root";
     private static final String PASSWORD = "root1";
 
+    // Метод для получения соединения с базой данных
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USERNAME, PASSWORD);
     }
@@ -28,9 +29,11 @@ public class Util {
                 configuration.setProperty("hibernate.connection.username", USERNAME);
                 configuration.setProperty("hibernate.connection.password", PASSWORD);
                 configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-                configuration.setProperty("hibernate.hbm2ddl.auto", "update");
 
-                // Add annotated class
+                // Убираем автоматическую генерацию схемы БД
+                // configuration.setProperty("hibernate.hbm2ddl.auto", "update");
+                configuration.setProperty("hibernate.show_sql", "true"); // чтобы видеть SQL-запросы
+
                 configuration.addAnnotatedClass(jm.task.core.jdbc.model.User.class);
 
                 ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
@@ -44,5 +47,3 @@ public class Util {
         return sessionFactory;
     }
 }
-
-

@@ -17,13 +17,16 @@ public class UserDaoHibernateImpl implements UserDao {
 
     private void executeTransaction(TransactionAction action) {
         Transaction transaction = null;
-        try (Session session = Util.getSessionFactory().openSession()) {
+        Session session = Util.getSessionFactory().openSession();
+        try {
             transaction = session.beginTransaction();
             action.execute(session);
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             logger.log(Level.SEVERE, "Transaction failed", e);
+        } finally {
+            session.close();
         }
     }
 
@@ -56,7 +59,7 @@ public class UserDaoHibernateImpl implements UserDao {
 
         executeTransaction(session -> {
             session.save(user);
-            System.out.println("User с именем – " + name + " добавлен в базу данных");
+            // Перенос вывода в сервисный слой
         });
     }
 
@@ -73,10 +76,13 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public List<User> getAllUsers() {
         List<User> users = null;
-        try (Session session = Util.getSessionFactory().openSession()) {
+        Session session = Util.getSessionFactory().openSession();
+        try {
             users = session.createQuery("FROM User", User.class).list();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to get all users", e);
+        } finally {
+            session.close();
         }
         return users;
     }
@@ -95,5 +101,3 @@ public class UserDaoHibernateImpl implements UserDao {
         void execute(Session session);
     }
 }
-
-

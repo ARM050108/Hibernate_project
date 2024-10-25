@@ -18,9 +18,10 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
-
     public void createUsersTable() {
-        String query = "CREATE TABLE IF NOT EXISTS users (id BIGINT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(50), lastName VARCHAR(50), age TINYINT)";
+        String query = "CREATE TABLE IF NOT EXISTS users " +
+                "(id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
+                "name VARCHAR(50), lastName VARCHAR(50), age TINYINT)";
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(query);
         } catch (SQLException e) {
@@ -44,6 +45,7 @@ public class UserDaoJDBCImpl implements UserDao {
             preparedStatement.setString(2, lastName);
             preparedStatement.setByte(3, age);
             preparedStatement.executeUpdate();
+            System.out.printf("User %s %s saved successfully.%n", name, lastName); // Вывод информации об успешном добавлении
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -53,7 +55,12 @@ public class UserDaoJDBCImpl implements UserDao {
         String query = "DELETE FROM users WHERE id = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setLong(1, id);
-            preparedStatement.executeUpdate();
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.printf("User with id %d removed successfully.%n", id); // Вывод информации об успешном удалении
+            } else {
+                System.out.printf("User with id %d not found.%n", id); // Вывод, если пользователь не найден
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -82,9 +89,9 @@ public class UserDaoJDBCImpl implements UserDao {
         String query = "DELETE FROM users";
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(query);
+            System.out.println("Users table cleaned successfully."); // Вывод информации об успешной очистке таблицы
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 }
-
