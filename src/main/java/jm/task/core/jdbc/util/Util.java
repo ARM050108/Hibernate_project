@@ -30,8 +30,6 @@ public class Util {
                 configuration.setProperty("hibernate.connection.password", PASSWORD);
                 configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
 
-                // Убираем автоматическую генерацию схемы БД
-                // configuration.setProperty("hibernate.hbm2ddl.auto", "update");
                 configuration.setProperty("hibernate.show_sql", "true"); // чтобы видеть SQL-запросы
 
                 configuration.addAnnotatedClass(jm.task.core.jdbc.model.User.class);
