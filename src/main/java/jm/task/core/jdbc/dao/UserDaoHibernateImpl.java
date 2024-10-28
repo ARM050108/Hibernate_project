@@ -3,6 +3,7 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import java.util.List;
@@ -11,22 +12,20 @@ import java.util.logging.Logger;
 
 public class UserDaoHibernateImpl implements UserDao {
     private static final Logger logger = Logger.getLogger(UserDaoHibernateImpl.class.getName());
+    private final SessionFactory sessionFactory = Util.getSessionFactory(); // создали поле sessionFactory
 
     public UserDaoHibernateImpl() {
     }
 
     private void executeTransaction(TransactionAction action) {
         Transaction transaction = null;
-        Session session = Util.getSessionFactory().openSession();
-        try {
+        try (Session session = sessionFactory.openSession()) { // используем поле sessionFactory
             transaction = session.beginTransaction();
             action.execute(session);
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             logger.log(Level.SEVERE, "Transaction failed", e);
-        } finally {
-            session.close();
         }
     }
 
@@ -59,7 +58,6 @@ public class UserDaoHibernateImpl implements UserDao {
 
         executeTransaction(session -> {
             session.save(user);
-            // Перенос вывода в сервисный слой
         });
     }
 
@@ -76,13 +74,10 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public List<User> getAllUsers() {
         List<User> users = null;
-        Session session = Util.getSessionFactory().openSession();
-        try {
+        try (Session session = sessionFactory.openSession()) { // используем поле sessionFactory
             users = session.createQuery("FROM User", User.class).list();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to get all users", e);
-        } finally {
-            session.close();
         }
         return users;
     }
@@ -101,3 +96,4 @@ public class UserDaoHibernateImpl implements UserDao {
         void execute(Session session);
     }
 }
+
