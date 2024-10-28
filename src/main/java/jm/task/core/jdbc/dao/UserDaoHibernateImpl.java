@@ -12,14 +12,14 @@ import java.util.logging.Logger;
 
 public class UserDaoHibernateImpl implements UserDao {
     private static final Logger logger = Logger.getLogger(UserDaoHibernateImpl.class.getName());
-    private final SessionFactory sessionFactory = Util.getSessionFactory(); // создали поле sessionFactory
+    private final SessionFactory sessionFactory = Util.getSessionFactory();
 
     public UserDaoHibernateImpl() {
     }
 
     private void executeTransaction(TransactionAction action) {
         Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) { // используем поле sessionFactory
+        try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
             action.execute(session);
             transaction.commit();
@@ -74,7 +74,7 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public List<User> getAllUsers() {
         List<User> users = null;
-        try (Session session = sessionFactory.openSession()) { // используем поле sessionFactory
+        try (Session session = sessionFactory.openSession()) { 
             users = session.createQuery("FROM User", User.class).list();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to get all users", e);
